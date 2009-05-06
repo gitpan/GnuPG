@@ -47,7 +47,7 @@ BEGIN {
 
     Exporter::export_ok_tags( qw( algo trust ) );
 
-    $VERSION = '0.09';
+    $VERSION = '0.09_02';
 }
 
 use constant DSA_ELGAMAL	=> 1;
@@ -122,7 +122,7 @@ sub cmdline($) {
 sub end_gnupg($) {
     my $self = shift;
 
-    print STDERR "GnuPG: closing status fd " . fileno ($self->{status_fd}) 
+    print STDERR "GnuPG: closing status fd " . fileno ($self->{status_fd})
       . "\n"
 	if $self->{trace};
 
@@ -398,7 +398,7 @@ sub gen_key($%) {
     my $name	  = $args{name};
 
     croak "Missing key name\n"	  unless $name;
-    croak "Invalid name: $name\n" 
+    croak "Invalid name: $name\n"
       unless $name =~ /^\s*[^0-9\<\(\[\]\)\>][^\<\(\[\]\)\>]+$/;
 
     my $email	  = $args{email};
@@ -410,7 +410,7 @@ sub gen_key($%) {
 				\@		# Contains at most one at
 				[a-zA-Z0-9_.-]+
 				[a-zA-Z0-9_-]	# Doesn't end in a dot
-			       /x 
+			       /x
 				 && $email !~ /\.\./;
     } else {
 	$email = "";
@@ -678,9 +678,9 @@ sub verify($%) {
     croak ( "missing signature argument\n" ) unless $args{signature};
     my $files = [];
     if ( $args{file} ) {
-	croak ( "detached signature must be in a file\n" ) 
+	croak ( "detached signature must be in a file\n" )
 	  unless -f $args{signature};
-	push @$files, $args{signature}, 
+	push @$files, $args{signature},
 	  ref $args{file} ? @{$args{file}} : $args{file};
     } else {
 	$self->{input} = $args{signature};
@@ -812,7 +812,7 @@ GnuPG - Perl module interface to the GNU Privacy Guard.
 =head1 DESCRIPTION
 
 GnuPG is a perl interface to the GNU Privacy Guard. It uses the
-shared memory coprocess interface that gpg provides for its 
+shared memory coprocess interface that gpg provides for its
 wrappers. It tries its best to map the interactive interface of
 the gpg to a more programmatic model.
 
@@ -893,7 +893,7 @@ How long the key is valid. Defaults to 0 or never expire.
 
 =item name
 
-This is the only mandatory argument. This is the name that will used 
+This is the only mandatory argument. This is the name that will used
 to construct the user id.
 
 =item email
@@ -941,7 +941,7 @@ encounters an error. Parameters :
 
 =item keys
 
-Optional argument that restricts the keys that will be exported. 
+Optional argument that restricts the keys that will be exported.
 Can either be a user id or a reference to an array of userid that
 specifies the keys to be exported. If left unspecified, all keys
 will be exported.
@@ -959,7 +959,7 @@ OpenPGP compliant) will be exported.
 =item output
 
 This argument specifies where the keys will be exported. Can be either
-a file name or a reference to a file handle. If not specified, the 
+a file name or a reference to a file handle. If not specified, the
 keys will be exported to stdout.
 
 =item armor
@@ -1143,7 +1143,7 @@ The fingerprint of the signature.
 =item trust
 
 The trust value of the public key of the signer. Those are values that
-can be imported in your namespace with the :trust tag. They are 
+can be imported in your namespace with the :trust tag. They are
 (TRUST_UNDEFINED, TRUST_NEVER, TRUST_MARGINAL, TRUST_FULLY, TRUST_ULTIMATE).
 
 =back
@@ -1163,7 +1163,7 @@ true. Method parameters :
 
 =item ciphertext
 
-This optional parameter contains either the name of the file 
+This optional parameter contains either the name of the file
 containing the ciphertext or a reference to a file handle containing
 the ciphertext. If not present, STDIN will be decrypted.
 
@@ -1187,7 +1187,7 @@ message.
 
 =back
 
-    Example: $gpg->decrypt( ciphertext => "file.gpg", output => "file.txt" 
+    Example: $gpg->decrypt( ciphertext => "file.gpg", output => "file.txt"
 			    passphrase => $secret );
 
 =head1 AUTHOR

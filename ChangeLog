@@ -1,5 +1,10 @@
 2009-05-06  version 0.9_01 Robbie Bow
 
+    * Dev release - update $VERSION in GnuPG.pm to see
+    cpantesters reports
+
+2009-05-06  version 0.9_01 Robbie Bow
+
     * Dev release that cargo cults the numerous fixes Debian
     maintainers have added since the last release.
     See debian/chnagelog for more details
