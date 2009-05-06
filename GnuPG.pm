@@ -264,7 +264,7 @@ sub run_gnupg($) {
 	# some ends must be closed in the child.
 	#
 	# Besides this is just plain good hygiene
-	my $max_fd = POSIX::sysconf( POSIX::_SC_OPEN_MAX ) || 256;
+	my $max_fd = POSIX::sysconf( &POSIX::_SC_OPEN_MAX ) || 256;
 	foreach my $f ( 3 .. $max_fd ) {
 	    next if $f == fileno $self->{status_fd};
 	    POSIX::close( $f );
@@ -611,12 +611,30 @@ sub check_sig($;$$) {
     ( $cmd, $arg ) = $self->read_from_status()
       if ( $cmd =~ /RSA_OR_IDEA/ );
 
+    # Ignore automatic key imports
+    ( $cmd, $arg ) = $self->read_from_status()
+      if ( $cmd =~ /IMPORTED/ );
+
+    ( $cmd, $arg ) = $self->read_from_status()
+      if ( $cmd =~ /IMPORT_OK/ );
+
+    ( $cmd, $arg ) = $self->read_from_status()
+      if ( $cmd =~ /IMPORT_RES/ );
+
     $self->abort_gnupg( "invalid signature from ", $arg =~ /[^ ](.+)/, "\n" )
       if ( $cmd =~ /BADSIG/);
 
-    $self->abort_gnupg( "error verifying signature from ", 
-			$arg =~ /([^ ])/, "\n" )
-      if ( $cmd =~ /ERRSIG/);
+    if ( $cmd =~ /ERRSIG/)
+      {
+        my ($keyid, $key_algo, $digest_algo, $sig_class, $timestamp, $rc)
+           = split ' ', $arg;
+        if ($rc == 9)
+          {
+            ($cmd, $arg) = $self->read_from_status();
+            $self->abort_gnupg( "no public key $keyid" );
+          }
+        $self->abort_gnupg( "error verifying signature from $keyid" )
+      }
 
     $self->abort_gnupg ( "protocol error: expected SIG_ID" )
       unless $cmd =~ /SIG_ID/;
@@ -628,6 +646,12 @@ sub check_sig($;$$) {
     my ( $keyid, $name ) = split /\s+/, $arg, 2;
 
     ( $cmd, $arg ) = $self->read_from_status;
+    my $policy_url = undef;
+    if ( $cmd =~ /POLICY_URL/ ) {
+        $policy_url = $arg;
+        ( $cmd, $arg ) = $self->read_from_status;
+    }
+
     $self->abort_gnupg ( "protocol error: expected VALIDSIG" )
       unless $cmd =~ /VALIDSIG/;
     my ( $fingerprint ) = split /\s+/, $arg, 2;
@@ -644,6 +668,7 @@ sub check_sig($;$$) {
 	     user	    => $name,
 	     fingerprint    => $fingerprint,
 	     trust	    => $trust,
+	     policy_url	    => $policy_url,
 	   };
 }
 
@@ -727,19 +752,27 @@ sub decrypt_postwrite($%) {
 sub decrypt_postread($) {
     my $self = shift;
 
+    my @cmds;
     # gnupg 1.0.2 adds this status message
     my ( $cmd, $arg ) = $self->read_from_status;
+    push @cmds, $cmd;
 
-    ( $cmd, $arg ) = $self->read_from_status()
-      if $cmd =~ /BEGIN_DECRYPTION/;
+    if ($cmd =~ /BEGIN_DECRYPTION/) {
+	( $cmd, $arg ) = $self->read_from_status();
+	push @cmds, $cmd;
+    };
 
     my $sig = undef;
-    if ( $cmd =~ /SIG_ID/ ) {
-	$sig = $self->check_sig( $cmd, $arg );
-	( $cmd, $arg ) = $self->read_from_status;
-    }
+    while (defined $cmd && !($cmd =~ /DECRYPTION_OKAY/)) {
+	if ( $cmd =~ /SIG_ID/ ) {
+	    $sig = $self->check_sig( $cmd, $arg );
+	}
+	( $cmd, $arg ) = $self->read_from_status();
+	push @cmds, $cmd if defined $cmd;
+    };
 
-    $self->abort_gnupg( "protocol error: expected DECRYPTION_OKAY got $cmd: \n" )
+    my $cmds = join ', ', @cmds;
+    $self->abort_gnupg( "protocol error: expected DECRYPTION_OKAY but never got it (all I saw was: $cmds): \n" )
       unless $cmd =~ /DECRYPTION_OKAY/;
 
     return $sig ? $sig : 1;
