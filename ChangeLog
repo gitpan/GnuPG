@@ -1,4 +1,10 @@
-2009-05-06  version 0.9_01 Robbie Bow
+2009-05-06  version 0.9_03 Robbie Bow
+
+    * Dev release - Fix import_key to expect correct response;
+    fix encrypt to expect correct response (both running against
+    gnupg 1.4.6); use Test::More for tests
+
+2009-05-06  version 0.9_02 Robbie Bow
 
     * Dev release - update $VERSION in GnuPG.pm to see
     cpantesters reports
