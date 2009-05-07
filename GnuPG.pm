@@ -47,7 +47,7 @@ BEGIN {
 
     Exporter::export_ok_tags( qw( algo trust ) );
 
-    $VERSION = '0.09_03';
+    $VERSION = '0.10';
 }
 
 use constant DSA_ELGAMAL    => 1;
