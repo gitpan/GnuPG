@@ -47,7 +47,7 @@ BEGIN {
 
     Exporter::export_ok_tags( qw( algo trust ) );
 
-    $VERSION = '0.10';
+    $VERSION = '0.10_1';
 }
 
 use constant DSA_ELGAMAL    => 1;
@@ -1195,6 +1195,9 @@ Francis J. Lacoste <francis.lacoste@Contre.COM>
 
 Copyright (c) 1999,2000 iNsu Innovations. Inc.
 Copyright (c) 2001 Francis J. Lacoste
+
+:wq!
+
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

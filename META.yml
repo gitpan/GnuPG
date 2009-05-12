@@ -1,9 +1,9 @@
 --- #YAML:1.0
 name:               GnuPG
-version:            0.10
-abstract:           ~
+version:            0.10_1
+abstract:           Inteface the GNU Privacy Guard
 author:  []
-license:            unknown
+license:            GPL
 distribution_type:  module
 configure_requires:
     ExtUtils::MakeMaker:  0
