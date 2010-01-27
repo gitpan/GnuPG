@@ -1,6 +1,10 @@
-2009-05-07  version 0.10_1 Robbie Bow
-    * Dev release - add minimal checking for the existence of the
-    gpg binary to Makefile.PL
+2010-01-27  version 0.11 Mark Frost
+
+    * The module should not properly handle the situation where a key is 
+    setup with a blank passphrase, as long as passphrase => undef is provided 
+    (or left out)
+    * Fixed an issue where STDIN and STDOUT cannot be overridden in an 
+    Apache environment. 
 
 2009-05-07  version 0.10 Robbie Bow
 

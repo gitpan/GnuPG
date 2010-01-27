@@ -47,7 +47,7 @@ BEGIN {
 
     Exporter::export_ok_tags( qw( algo trust ) );
 
-    $VERSION = '0.10_1';
+    $VERSION = '0.10';
 }
 
 use constant DSA_ELGAMAL    => 1;
@@ -821,6 +821,13 @@ argument using named parameters, and errors are returned by
 throwing an exception (using croak).  If you wan't to catch
 errors you will have to use eval.
 
+When handed in a file handle for input or output parameters
+on many of the functions, the API attempts to tie that 
+handle to STDIN and STDOUT. In certain persistent environments 
+(particularly a web environment), this will not work. This 
+problem can be avoided by passing in file names to all 
+relevant parameters rather than a Perl file handle. 
+
 There is also a tied file handle interface which you may find more
 convenient for encryption and decryption. See GnuPG::Tie(3) for details.
 
@@ -867,8 +874,6 @@ This methods is used to create a new gpg key pair. The methods croaks
 if there is an error. It is a good idea to press random keys on the
 keyboard while running this methods because it consumes a lot of
 entropy from the computer. Here are the parameters it accepts :
-
-    Ex: $gpg->
 
 =over
 
@@ -1195,9 +1200,6 @@ Francis J. Lacoste <francis.lacoste@Contre.COM>
 
 Copyright (c) 1999,2000 iNsu Innovations. Inc.
 Copyright (c) 2001 Francis J. Lacoste
-
-:wq!
-
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
