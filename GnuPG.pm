@@ -47,7 +47,7 @@ BEGIN {
 
     Exporter::export_ok_tags( qw( algo trust ) );
 
-    $VERSION = '0.15';
+    $VERSION = '0.16';
 }
 
 use constant DSA_ELGAMAL    => 1;
@@ -101,7 +101,7 @@ sub cmdline($) {
 
     # Default options
     push @$args, "--no-tty" unless $self->{trace};
-    push @$args, "--no-greeting", "--status-fd", fileno $self->{status_fd},
+    push @$args, "--no-greeting", "--yes", "--status-fd", fileno $self->{status_fd},
          "--run-as-shm-coprocess", "0";
 
     # Check for homedir and options file
@@ -259,7 +259,7 @@ sub run_gnupg($) {
           or die "can't open $self->{output} for output: $!\n";
     } elsif ( $self->{output} ) {
       my $gpg = shift(@{$cmdline});
-      unshift(@{$cmdline}, '--yes --output ' . $self->{output});
+      unshift(@{$cmdline}, '--output ' . $self->{output});
       unshift(@{$cmdline}, $gpg);
     } # Defaults to stdout
 
