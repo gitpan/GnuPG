@@ -47,7 +47,7 @@ BEGIN {
 
     Exporter::export_ok_tags( qw( algo trust ) );
 
-    $VERSION = '0.14';
+    $VERSION = '0.15';
 }
 
 use constant DSA_ELGAMAL    => 1;
@@ -275,6 +275,8 @@ sub run_gnupg($) {
         next if $f == fileno $self->{status_fd};
         POSIX::close( $f );
     }
+
+    print STDERR "GnuPG: executing `" . join(' ', @$cmdline) . "`" if $self->{trace};
 
     exec ( join(' ', @$cmdline) )
       or CORE::die "can't exec gnupg: $!\n";
@@ -530,7 +532,7 @@ sub encrypt($%) {
     my $options = [];
     croak ( "no recipient specified\n" )
       unless $args{recipient} or $args{symmetric};
-    push @$options, "--recipient" => $args{recipient};
+    push @$options, "--recipient" => "'" . $args{recipient} . "'";
 
     push @$options, "--sign"        if $args{sign};
     croak ( "can't sign an symmetric encrypted message\n" )
